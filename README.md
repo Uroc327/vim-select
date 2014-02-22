@@ -19,6 +19,6 @@ You also can save your checklist for further editing.
 Supported 'Formats'
 -------------------
 
-* GFM checklist `* [ ] and * [x]`
-* diff like     `-- and ++`
+* GFM checklist `'* [ ]' and '* [x]'`
+* diff like     `'--' and '++'`
 

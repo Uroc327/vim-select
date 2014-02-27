@@ -1,7 +1,7 @@
 " File:         plugin/select.vim
 " Description:  Checkbox selection for vim
-" Maintainer:   Constantin Runge <uroc327@cssbook.de>
-" Version:      1.0
+" Author:       Constantin Runge <uroc327@cssbook.de>
+" Version:      0.0
 
 " check for v:version
 if exists("g:loaded_select") || &cp
@@ -9,6 +9,7 @@ if exists("g:loaded_select") || &cp
 endif
 let g:loaded_select = 1
 
+" needed? ( || &cp)
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -38,4 +39,5 @@ command! -nargs=0 SelectDisable call select#SelectDisable()
 execute "nnoremap <silent> " . g:select_toggle_map . " :call select#SelectToggle()<CR>"
 
 let &cpo = s:save_cpo
+
 " vim: set et sw=2

@@ -1,7 +1,12 @@
 " File:         autoload/select.vim
 " Description:  Checkbox selection for vim
-" Maintainer:   Constantin Runge <uroc327@cssbook.de>
-" Version:      1.0
+" Author:       Constantin Runge <uroc327@cssbook.de>
+" Version:      0.0
+
+if exists("g:autoloaded_select") || &cp
+  finish
+endif
+let g:autoloaded_select = 1
 
 function! select#SelectToggle()
   call s:SetBufferOptDefault('select_active', 0)
@@ -16,6 +21,7 @@ function! select#SelectDisable()
   call s:SetActive(0)
 endfunction
 
+" unicode: \u2610 \u2611 \u2612
 function! select#ToggleCheck()
 endfunction
 

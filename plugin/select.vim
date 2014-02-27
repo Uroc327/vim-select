@@ -1,7 +1,7 @@
 " File:         plugin/select.vim
 " Description:  Checkbox selection for vim
 " Author:       Constantin Runge <uroc327@cssbook.de>
-" Version:      0.0
+" Version:      0.0.0
 
 " check for v:version
 if exists("g:loaded_select") || &cp

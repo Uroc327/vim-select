@@ -23,14 +23,41 @@ endfunction
 
 " unicode: \u2610 \u2611 \u2612
 function! select#ToggleCheck()
+  if !exists('b:select_active') || !b:select_active
+    return
+  endif
+
+  " or do not use line= specifier to modify existing signs -> signs have to be
+  " in all lines
   if s:IsSelected(line('.'))
     execute "sign unplace " . line('.') . " buffer=" . winbufnr(0)
+    execute "sign place " . line('.') . " line=" . line('.') . " name=unticked buffer=" . winbufnr(0)
   else
+    execute "sign unplace " . line('.') . " buffer=" . winbufnr(0)
     execute "sign place " . line('.') . " line=" . line('.') . " name=ticked buffer=" . winbufnr(0)
   endif
 endfunction
 
 function! select#Invert()
+  if !exists('b:select_active') || !b:select_active
+    return
+  endif
+
+  redir => l:signstr
+  silent! execute "sign place buffer=" . winbufnr(0)
+  redir END
+
+  for line in filter(split(l:signstr, '\n'), 'v:val =~ "^ "')                 " split by newlines and use only lines starting with ' ' (   line=.. buffer=..)
+    let l:infolist = matchlist(line, '\vline\=(\d+)\s*id\=(\S+)\s*name\=(\S+)')  " :h pattern
+    if empty(l:infolist) | continue | endif
+    if l:infolist[3] == 'ticked'
+      execute "sign unplace " . line('.') . " buffer=" . winbufnr(0)
+      execute "sign place " . line('.') . " line=" . line('.') . " name=unticked buffer=" . winbufnr(0)
+    elseif l:infolist[3] == 'unticked'
+      execute "sign unplace " . line('.') . " buffer=" . winbufnr(0)
+      execute "sign place " . line('.') . " line=" . line('.') . " name=ticked buffer=" . winbufnr(0)
+    endif
+  endfor
 endfunction
 
 function! s:SetBufferOptDefault(opt, val)
@@ -44,28 +71,20 @@ function! s:IsSelected(line)
   silent! execute "sign place buffer=" . winbufnr(0)
   redir END
 
-  let l:signdict = {}
-
-  for line in filter(split(l:signstr, '\n'), 'v:val =~ "^[S ]"')                 " split by newlines and use only lines starting with 'S' (Signs for ...) or ' ' (   line=.. buffer=..)
-    let l:infolist = matchlist(line, '\vline\=(\d+)\s*id\=(\S+)\s*name\=(\S+)')  " :h pattern
-    if(!empty(l:infolist))
-      let l:signdict[l:infolist[1]] = {
-        \ 'id'   : l:infolist[2],
-        \ 'name' : l:infolist[3],
-        \ }
-    endif
-  endfor
-
-  echoe l:signdict
-
-  return 0
+  if match(l:signstr, 'line=' . a:line . '.*name=ticked') >= 0
+    return 1
+  else
+    return 0
+  endif
 endfunction
 
 function! s:SetActive(active)
   let b:select_active = a:active
   call s:UpdateMappings()
+  call s:UpdateBuffer()
 endfunction
 
+" mappings for newline / line delete ??
 function! s:UpdateMappings()
   if exists('b:select_active') && b:select_active
     execute "nnoremap <silent> <buffer> " . g:select_toggle_check_map . " :call select#ToggleCheck()<CR>"
@@ -76,7 +95,16 @@ function! s:UpdateMappings()
   endif
 endfunction
 
-execute "sign define ticked text=\u2622"
-execute "sign define unticked text=\u2620"
+" save and restore format
+function! s:UpdateBuffer()
+  if exists('b:select_active') && b:select_active
+    " do not show save prefix
+  else
+    " show save prefix
+  endif
+endfunction
 
-" vim: set et sw=2
+execute "sign define ticked text=\u2612"
+execute "sign define unticked text=\u2610"
+
+" vim: set et sw=2:

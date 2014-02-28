@@ -40,4 +40,4 @@ execute "nnoremap <silent> " . g:select_toggle_map . " :call select#SelectToggle
 
 let &cpo = s:save_cpo
 
-" vim: set et sw=2
+" vim: set et sw=2:
